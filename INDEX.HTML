@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base de Datos Interactiva - Módulo 3.6</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      color: #1e3a8a;
+      font-size: 22px;
+    }
+    .header p {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+    .instructions {
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #2563eb;
+    }
+    .companies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border-left: 6px solid #94a3b8;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+    .card.selected-card {
+      border-left-color: #16a34a;
+    }
+    .card h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: #1e293b;
+    }
+    .card p {
+      margin: 0;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+    .badge-selected {
+      background-color: #dcfce7;
+      color: #15803d;
+    }
+    .badge-discarded {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 15px;
+    }
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 550px;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      animation: fadeIn 0.2s ease-out;
+      position: relative;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #94a3b8;
+      border: none;
+      background: none;
+    }
+    .close-btn:hover {
+      color: #1e293b;
+    }
+    .modal-header h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #1e3a8a;
+    }
+    .modal-body {
+      margin-top: 20px;
+    }
+    .info-group {
+      margin-bottom: 14px;
+    }
+    .info-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 3px;
+    }
+    .info-group p, .info-group ul {
+      margin: 0;
+      font-size: 14px;
+      color: #334155;
+    }
+    .info-group ul {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Base de Datos Interactiva de Empresas Candidatas</h1>
+    <p>Módulo 3.6: Adquisición y Contratación de Bienes y Servicios para Entidades del Estado</p>
+  </div>
+
+  <p class="instructions">👇 Haz clic sobre cualquier empresa para ver su información completa 👇</p>
+
+  <div class="companies-grid">
+    <!-- Empresa 1 -->
+    <div class="card selected-card" onclick="openModal(1)">
+      <h3>1. Waltervenez, S.A. de C.V.</h3>
+      <p>Ingeniería y Proyectos</p>
+      <span class="badge badge-selected">Seleccionada</span>
+    </div>
+
+    <!-- Empresa 2 -->
+    <div class="card" onclick="openModal(2)">
+      <h3>2. DISA, S.A. de C.V.</h3>
+      <p>Diseño e Inversiones</p>
+      <span class="badge badge-discarded">Descartada</span>
+    </div>
+
+    <!-- Empresa 3 -->
+    <div class="card" onclick="openModal(3)">
+      <h3>3. Constructora Díaz Sánchez</h3>
+      <p>S.A. de C.V.</p>
+      <span class="badge badge-discarded">Descartada</span>
+    </div>
+
+    <!-- Empresa 4 -->
+    <div class="card" onclick="openModal(4)">
+      <h3>4. ROBLE, S.A. de C.V.</h3>
+      <p>División Infraestructura</p>
+      <span class="badge badge-discarded">Descartada</span>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+      <div class="modal-header">
+        <h2 id="modal-title">Nombre Empresa</h2>
+        <span id="modal-badge" class="badge">Estatus</span>
+      </div>
+      <div class="modal-body">
+        <div class="info-group">
+          <label>Rubro / Sector</label>
+          <p id="modal-rubro"></p>
+        </div>
+        <div class="info-group">
+          <label>Fuentes de Información</label>
+          <div id="modal-fuentes"></div>
+        </div>
+        <div class="info-group">
+          <label>Proyectos Públicos Relacionados</label>
+          <p id="modal-proyectos"></p>
+        </div>
+        <div class="info-group">
+          <label>Criterio / Factores de Selección</label>
+          <p id="modal-criterios"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const data = {
+      1: {
+        nombre: "Waltervenez, S.A. de C.V. (Ingeniería y Proyectos)",
+        estatus: "Seleccionada",
+        estatusClass: "badge-selected",
+        rubro: "Construcción e Infraestructura Vial y Edificaciones",
+        fuentes: "<ul><li>Entrevista directa (Ing. Jaime Lovato).</li><li>Sitio web oficial: www.waltervenez.com.sv</li><li>Portal COMPRASAL (Registro de Proveedores).</li></ul>",
+        proyectos: "Proyecto de infraestructura activa en ejecución para el Órgano Judicial (Corte Suprema de Justicia).",
+        criterios: "Ofrece acceso directo a la información de campo, alta disposición de personal clave (Bodega y Calidad) y ejecución activa de contratos estatales."
+      },
+      2: {
+        nombre: "DISA, S.A. de C.V. (Diseño e Inversiones)",
+        estatus: "Descartada",
+        estatusClass: "badge-discarded",
+        rubro: "Ingeniería Civil y Construcción Pesada",
+        fuentes: "<ul><li>Portal de transparencia estatal.</li><li>Registros de proveedores DINAC.</li><li>Redes sociales institucionales.</li></ul>",
+        proyectos: "Proyectos de mitigación y pavimentación para el MOPT y FOVIAL.",
+        criterios: "Restricción de acceso para entrevistas presenciales en el período de la Etapa 1 debido a políticas internas de confidencialidad empresarial."
+      },
+      3: {
+        nombre: "Constructora Díaz Sánchez, S.A. de C.V.",
+        estatus: "Descartada",
+        estatusClass: "badge-discarded",
+        rubro: "Obras Hidráulicas y Edificaciones",
+        fuentes: "<ul><li>Memoria de labores institucional del MOPT.</li><li>Perfil empresarial en el portal COMPRASAL.</li></ul>",
+        proyectos: "Proyectos de infraestructura hidráulica y saneamiento para ANDA.",
+        criterios: "Sus proyectos activos se encuentran situados en zonas geográficas distantes, dificultando las visitas continuas de diagnóstico de campo."
+      },
+      4: {
+        nombre: "ROBLE, S.A. de C.V. (División Infraestructura)",
+        estatus: "Descartada",
+        estatusClass: "badge-discarded",
+        rubro: "Desarrollo Urbano e Infraestructura",
+        fuentes: "<ul><li>Publicaciones de licitaciones públicas.</li><li>Portal de Compras Públicas.</li></ul>",
+        proyectos: "Construcción y remodelación de instalaciones públicas.",
+        criterios: "Sus procesos de recepción e inventarios se encuentran centralizados en oficinas corporativas fuera del alcance directo del equipo de estudiantes."
+      }
+    };
+
+    function openModal(id) {
+      const item = data[id];
+      document.getElementById('modal-title').innerText = item.nombre;
+      
+      const badge = document.getElementById('modal-badge');
+      badge.innerText = item.estatus;
+      badge.className = `badge ${item.estatusClass}`;
+
+      document.getElementById('modal-rubro').innerText = item.rubro;
+      document.getElementById('modal-fuentes').innerHTML = item.fuentes;
+      document.getElementById('modal-proyectos').innerText = item.proyectos;
+      document.getElementById('modal-criterios').innerText = item.criterios;
+
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('modal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
+
+</body>
+</html>
